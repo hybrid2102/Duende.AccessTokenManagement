@@ -58,9 +58,13 @@ public class ClientCredentialsTokenEndpointService : IClientCredentialsTokenEndp
     {
         var client = _options.Get(clientName);
 
-        if (string.IsNullOrWhiteSpace(client.TokenEndpoint) || string.IsNullOrEmpty(client.ClientId))
+        if (string.IsNullOrWhiteSpace(client.ClientId))
         {
-            throw new InvalidOperationException("unknown client");
+            throw new InvalidOperationException($"No ClientId configured for client {clientName}");
+        }
+        if (string.IsNullOrWhiteSpace(client.TokenEndpoint))
+        {
+            throw new InvalidOperationException($"No TokenEndpoint configured for client {clientName}");
         }
 
         var request = new ClientCredentialsTokenRequest

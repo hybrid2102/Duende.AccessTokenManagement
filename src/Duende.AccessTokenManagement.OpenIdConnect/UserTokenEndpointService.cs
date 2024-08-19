@@ -116,6 +116,8 @@ public class UserTokenEndpointService : IUserTokenEndpointService
             dPoPJsonWebKey != null && 
             response.DPoPNonce != null)
         {
+            _logger.LogDebug("DPoP error during token refresh. Retrying with server nonce");
+
             var proof = await _dPoPProofService.CreateProofTokenAsync(new DPoPProofRequest
             {
                 Url = request.Address!,
@@ -144,7 +146,7 @@ public class UserTokenEndpointService : IUserTokenEndpointService
             token.Expiration = response.ExpiresIn == 0
                 ? DateTimeOffset.MaxValue
                 : DateTimeOffset.UtcNow.AddSeconds(response.ExpiresIn);
-            token.RefreshToken = response.RefreshToken;
+            token.RefreshToken = response.RefreshToken ?? userToken.RefreshToken;
             token.Scope = response.Scope;    
         }
 
